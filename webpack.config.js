@@ -4,7 +4,7 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/sheetwrapper.js',
+    main: './src/main.js',
   },
   output: {
     path: path.resolve(__dirname, './dist'),
