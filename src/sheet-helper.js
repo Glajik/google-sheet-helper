@@ -1,11 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 
 import _ from 'lodash';
+// import '@babel/polyfill';
+import './arrayfill_polyfill';
 
 /**
  * Provide more convient work with specified sheet
  */
-export default class SheetHelper {
+// eslint-disable-next-line
+export class SheetHelper {
   constructor(options = {}) {
     const {
       sheetName,
