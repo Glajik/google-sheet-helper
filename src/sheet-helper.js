@@ -62,8 +62,8 @@ export class SheetHelper {
   /**
    * Convert array of array of values to array of row object.
    * Each row contains the row index rowId started from 1.
-   * @param {array} values array of row's arrays [[a, 1], [b, 2], ...]
-   * @returns array of row objects [{ name: 'a', value: '1' }, ...]
+   * @param {array} values array of row's arrays
+   * @returns array of row objects
    */
   toRowDataColl(values) {
     this.headerValues = values.slice(0, this.numHeaders);
@@ -200,7 +200,7 @@ export class SheetHelper {
   }
 
   /**
-   * @returns a list [ {rowId, count }, ... ] in which rowId is first row in sequence
+   * @returns a list in which rowId is first row in sequence
    * and count is the number of lines that are not interrupted by the predicate are
    * specified. Rows that match the predicate are not included in any block.
    * @param {*} data
