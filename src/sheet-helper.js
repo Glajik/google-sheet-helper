@@ -16,9 +16,17 @@ export class SheetHelper {
       fields,
     } = options;
 
-    this.sheetName = sheetName || 'Лист 1';
+    this.sheetName = sheetName || 'Sheet 1';
     this.numHeaders = numHeaders || 0;
-    this.fields = fields || 'A';
+
+    if (typeof fields === 'string') {
+      this.fields = fields.split(',').map(f => f.trim());
+    } else if (fields instanceof Array) {
+      this.fields = fields;
+    } else {
+      this.fields = ['A'];
+    }
+
     // prefill default header
     const headers = new Array(this.numHeaders).fill('');
     this.headerValues = headers.map(() => new Array(this.fields.length).fill(''));

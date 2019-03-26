@@ -5,7 +5,7 @@
 import { expect } from 'chai';
 // import * as sinon from 'sinon';
 
-import SheetHelper from '../src/main'; // eslint-disable-line
+import { SheetHelper } from '../src/sheet-helper';
 
 let helper;
 describe('Test', () => {
@@ -23,6 +23,7 @@ describe('Test', () => {
     helper = new SheetHelper(options);
   });
 
+
   it('Should custom init', () => {
     expect(helper).is.exist; // eslint-disable-line
     expect(helper.headerValues).is.deep.equal([['', '', '']]);
@@ -31,8 +32,16 @@ describe('Test', () => {
 
   it('Should init default', () => {
     expect(new SheetHelper()).is.exist; // eslint-disable-line
+    expect(new SheetHelper().sheetName).is.equal('Sheet 1');
+    expect(new SheetHelper().numHeaders).is.equal(0);
+    expect(new SheetHelper().fields).is.deep.equal(['A']);
     expect(new SheetHelper().headerValues).is.deep.equal([]);
     expect(new SheetHelper().dataValues).is.deep.equal([]);
+  });
+
+  it('Can be use array or string for fields', () => {
+    expect(new SheetHelper({ fields: ['x', 'y', 'z'] }).fields).is.deep.equal(['x', 'y', 'z']);
+    expect(new SheetHelper({ fields: 'a, b , c' }).fields).is.deep.equal(['a', 'b', 'c']);
   });
 
   it('firstRow', () => {
