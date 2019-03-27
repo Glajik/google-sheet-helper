@@ -3,7 +3,7 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/sheet-helper.js',
+    main: './src/SheetHelper.js',
   },
   output: {
     library: 'SheetHelper',
