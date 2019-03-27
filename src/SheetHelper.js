@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 
-import _ from 'lodash';
+import findIndex from 'lodash/findIndex';
 // import '@babel/polyfill';
 import './arrayfill_polyfill';
 
@@ -91,12 +91,14 @@ export class SheetHelper {
       dataColl.push(rowData);
     }
     this.dataColl = dataColl;
-    return _.cloneDeep(this.dataColl);
+    return this.dataColl;
   }
 
   toRowValuesColl(dataColl, headerValues = this.headerValues) {
-    this.dataColl = _.cloneDeep(dataColl);
-    this.headerValues = _.cloneDeep(headerValues);
+    // this.dataColl = _.cloneDeep(dataColl);
+    // this.headerValues = _.cloneDeep(headerValues);
+    this.dataColl = this.clone(dataColl);
+    this.headerValues = this.clone(headerValues);
     const dataCollCount = dataColl.length;
     const fieldsCount = this.fields.length;
 
@@ -124,7 +126,7 @@ export class SheetHelper {
    * @param {String} field FieldName
    */
   findColumnId(field) {
-    const index = _.findIndex(this.fields, v => v === field);
+    const index = findIndex(this.fields, v => v === field);
     const column = index + 1;
     if (index < 0) {
       return;
@@ -165,32 +167,8 @@ export class SheetHelper {
     return newValues;
   }
 
-  /**
-   * Update all sheet except header rows
-   * @param values
-   * @param {Array} rowDataColl array of rowData objects
-   */
-  updateDataRangeValues(values, rowDataColl) {
-    const { sheet } = this;
-
-    this.clearSheet();
-
-    const row = this.numHeaders + 1;
-    const column = 1;
-    const numColumns = this.fields.length;
-
-    // convert rowData array to array of row values
-    // const values = rowDataColl.map(rowData => this.getValues(rowData));
-
-    // update sheet
-    const numRows = rowDataColl.length;
-    sheet.getRange(row, column, numRows, numColumns).setValues(values);
-
-    this.resetSheetDataCache();
-    this.SpreadsheetApp.flush();
-  }
-
-  static blockBuilder(acc, { rowId }) {
+  // eslint-disable-next-line class-methods-use-this
+  blockBuilder(acc, { rowId }) {
     const [first, ...rest] = acc;
     // init acc
     if (!first) {
@@ -214,9 +192,37 @@ export class SheetHelper {
    * @param {*} data
    * @param {Function} predicate
    */
-  static getBlocks(data, predicate) {
+  getBlocks(data, predicate) {
     const filtered = data.filter(predicate);
-    const blocks = filtered.reduce(SheetHelper.blockBuilder, []);
+    const blocks = filtered.reduce(this.blockBuilder, []);
     return blocks;
+  }
+
+  clone(objectToBeCloned) {
+    // Basis.
+    if (!(objectToBeCloned instanceof Object)) {
+      return objectToBeCloned;
+    }
+
+    let objectClone;
+
+    // Filter out special objects.
+    const Constructor = objectToBeCloned.constructor;
+    switch (Constructor) {
+      // Implement other special objects here.
+      case RegExp:
+        objectClone = new Constructor(objectToBeCloned);
+        break;
+      case Date:
+        objectClone = new Constructor(objectToBeCloned.getTime());
+        break;
+      default:
+        objectClone = new Constructor();
+    }
+
+    // Clone each property.
+    for (let prop in objectToBeCloned) { objectClone[prop] = this.clone(objectToBeCloned[prop]) } // eslint-disable-line
+
+    return objectClone;
   }
 }
