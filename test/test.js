@@ -5,7 +5,7 @@
 import { expect } from 'chai';
 // import * as sinon from 'sinon';
 
-import { SheetHelper } from '../src/sheet-helper';
+import { SheetHelper } from '../src/SheetHelper';
 
 let helper;
 describe('Test', () => {
