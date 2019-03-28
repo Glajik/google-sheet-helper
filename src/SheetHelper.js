@@ -95,8 +95,6 @@ export class SheetHelper {
   }
 
   toRowValuesColl(dataColl, headerValues = this.headerValues) {
-    // this.dataColl = _.cloneDeep(dataColl);
-    // this.headerValues = _.cloneDeep(headerValues);
     this.dataColl = this.clone(dataColl);
     this.headerValues = this.clone(headerValues);
     const dataCollCount = dataColl.length;

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Help to work with sheet data",
-  "main": "src/SheetHelper.js",
+  "main": "dist/SheetHelper.js",
   "scripts": {
     "lint": "eslint src test --fix",
     "test": "mocha --require @babel/register",
