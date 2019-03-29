@@ -174,4 +174,30 @@ describe('Test', () => {
       ['b', '2', false],
     ]);
   });
+
+  it('Should work with zero numHeaders', () => {
+    const a = [
+      ['a', '1', true],
+      ['b', '2', false],
+    ];
+
+    const data = [
+      {
+        rowId: 1,
+        A: 'a',
+        B: '1',
+        C: true,
+      },
+      {
+        rowId: 2,
+        A: 'b',
+        B: '2',
+        C: false,
+      },
+    ];
+
+    const options = { fields: 'A, B, C', numHeaders: 0 };
+    expect(new SheetHelper(options).toRowDataColl(a)).is.deep.equal(data);
+    expect(new SheetHelper(options).toRowValuesColl(data)).is.deep.equal(a);
+  });
 });
