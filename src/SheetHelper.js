@@ -29,14 +29,26 @@ export class SheetHelper {
       this.fields = ['A'];
     }
 
-    const headers = new Array(this.numHeaders).fill('');
-
     // prefil default
+    const headers = new Array(this.numHeaders).fill('');
     this.memo = {
+      values: [],
       headerValues: headers.map(() => new Array(this.fields.length).fill('')),
       dataValues: [],
       rowDataColl: [],
     };
+  }
+
+  /**
+   * Used only for range values
+   * @param {*} values Nested arrays representing range values
+   */
+  memoize(values) {
+    if (isEqual(values, this.memo.values)) return;
+    const cloned = this.clone(values);
+    this.memo.values = cloned;
+    this.memo.headerValues = cloned.slice(0, this.numHeaders);
+    this.memo.dataValues = cloned.slice(this.numHeaders);
   }
 
   /**
@@ -74,18 +86,16 @@ export class SheetHelper {
   }
 
   /**
-   * Convert array of array of values to array of row object.
+   * Convert range values to collection of rowData.
    * Each row contains the row index rowId started from 1.
-   * @param {array} values array of row's arrays
+   * @param {array} values range values
    * @returns array of row objects
    */
   toRowDataColl(values) {
     // return chached result
     if (isEqual(values, this.memo.values)) return this.memo.rowDataColl;
-    const cloned = this.clone(values);
-    const headerValues = cloned.slice(0, this.numHeaders);
-    const dataValues = cloned.slice(this.numHeaders);
 
+    const dataValues = values.slice(this.numHeaders);
     const rowDataColl = [];
     const valuesCount = dataValues.length;
     const fieldsCount = this.fields.length;
@@ -100,11 +110,9 @@ export class SheetHelper {
       rowDataColl.push(rowData);
     }
     // memoization
-    this.memo.rowDataColl = rowDataColl;
-    this.memo.headerValues = headerValues;
-    this.memo.dataValues = dataValues;
-    this.memo.values = cloned;
-    return this.clone(rowDataColl);
+    this.memoize(values);
+    this.memo.rowDataColl = this.clone(rowDataColl);
+    return rowDataColl;
   }
 
   /**
@@ -113,12 +121,13 @@ export class SheetHelper {
    * @param {*} headerValues If present, output has this values in the top
    */
   toRowValuesColl(rowDataColl, headerValues) {
-    const dataCollCount = rowDataColl.length;
+    const cloned = this.clone(rowDataColl);
+    const dataCollCount = cloned.length;
     const fieldsCount = this.fields.length;
 
     const dataValues = [];
     for (let i = 0; i < dataCollCount; i++) { // eslint-disable-line no-plusplus
-      const rowData = rowDataColl[i];
+      const rowData = cloned[i];
       const rowValues = [];
       for (let j = 0; j < fieldsCount; j++) { // eslint-disable-line no-plusplus
         const field = this.getField(j);
@@ -132,12 +141,12 @@ export class SheetHelper {
     }
 
     // memoization
-    this.memo.dataValues = dataValues;
-    this.memo.rowDataColl = this.clone(rowDataColl);
-    if (isArray(headerValues)) {
-      this.memo.headerValues = this.clone(headerValues);
-    }
-    return [...this.memo.headerValues, ...dataValues];
+    this.memo.rowDataColl = cloned;
+    const oldHeaderValues = this.memo.headerValues;
+    // eslint-disable-next-line max-len
+    const values = isArray(headerValues) ? [...headerValues, ...dataValues] : [...oldHeaderValues, ...dataValues];
+    this.memoize(values);
+    return values;
   }
 
   /**
