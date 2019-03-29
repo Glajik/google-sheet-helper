@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import findIndex from 'lodash/findIndex';
+import isArray from 'lodash/isArray';
 // import '@babel/polyfill';
 import './arrayfill_polyfill';
 
@@ -27,10 +28,14 @@ export class SheetHelper {
       this.fields = ['A'];
     }
 
-    // prefill default header
     const headers = new Array(this.numHeaders).fill('');
-    this.headerValues = headers.map(() => new Array(this.fields.length).fill(''));
-    this.dataValues = [];
+
+    // prefil default
+    this.memo = {
+      headerValues: headers.map(() => new Array(this.fields.length).fill('')),
+      dataValues: [],
+      rowDataColl: [],
+    };
   }
 
   /**
@@ -74,35 +79,41 @@ export class SheetHelper {
    * @returns array of row objects
    */
   toRowDataColl(values) {
-    this.headerValues = values.slice(0, this.numHeaders);
-    this.dataValues = values.slice(this.numHeaders);
+    const headerValues = values.slice(0, this.numHeaders);
+    const dataValues = values.slice(this.numHeaders);
 
-    const dataColl = [];
-    const valuesCount = this.dataValues.length;
+    const rowDataColl = [];
+    const valuesCount = dataValues.length;
     const fieldsCount = this.fields.length;
 
     for (let i = 0; i < valuesCount; i++) { // eslint-disable-line no-plusplus
       const rowData = {};
       for (let j = 0; j < fieldsCount; j++) { // eslint-disable-line no-plusplus
         const field = this.getField(j);
-        rowData[field] = this.dataValues[i][j];
+        rowData[field] = dataValues[i][j];
       }
       rowData.rowId = i + 1 + this.numHeaders;
-      dataColl.push(rowData);
+      rowDataColl.push(rowData);
     }
-    this.dataColl = dataColl;
-    return this.dataColl;
+    // memoization
+    this.memo.rowDataColl = rowDataColl;
+    this.memo.headerValues = headerValues;
+    this.memo.dataValues = dataValues;
+    return this.clone(rowDataColl);
   }
 
-  toRowValuesColl(dataColl, headerValues = this.headerValues) {
-    this.dataColl = this.clone(dataColl);
-    this.headerValues = this.clone(headerValues);
-    const dataCollCount = dataColl.length;
+  /**
+   * @returns Nested arrays, which represent a rows and columns
+   * @param {*} rowDataColl Collection of rowData object
+   * @param {*} headerValues If present, output has this values in the top
+   */
+  toRowValuesColl(rowDataColl, headerValues) {
+    const dataCollCount = rowDataColl.length;
     const fieldsCount = this.fields.length;
 
     const dataValues = [];
     for (let i = 0; i < dataCollCount; i++) { // eslint-disable-line no-plusplus
-      const rowData = dataColl[i];
+      const rowData = rowDataColl[i];
       const rowValues = [];
       for (let j = 0; j < fieldsCount; j++) { // eslint-disable-line no-plusplus
         const field = this.getField(j);
@@ -114,8 +125,14 @@ export class SheetHelper {
       }
       dataValues.push(rowValues);
     }
-    this.dataValues = dataValues;
-    return [...this.headerValues, ...this.dataValues];
+
+    // memoization
+    this.memo.dataValues = dataValues;
+    this.memo.rowDataColl = this.clone(rowDataColl);
+    if (isArray(headerValues)) {
+      this.memo.headerValues = this.clone(headerValues);
+    }
+    return [...this.memo.headerValues, ...dataValues];
   }
 
   /**

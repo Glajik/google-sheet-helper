@@ -26,8 +26,8 @@ describe('Test', () => {
 
   it('Should custom init', () => {
     expect(helper).is.exist; // eslint-disable-line
-    expect(helper.headerValues).is.deep.equal([['', '', '']]);
-    expect(helper.dataValues).is.deep.equal([]);
+    expect(helper.memo.headerValues).is.deep.equal([['', '', '']]);
+    expect(helper.memo.dataValues).is.deep.equal([]);
   });
 
   it('Should init default', () => {
@@ -35,8 +35,9 @@ describe('Test', () => {
     expect(new SheetHelper().sheetName).is.equal('Sheet 1');
     expect(new SheetHelper().numHeaders).is.equal(0);
     expect(new SheetHelper().fields).is.deep.equal(['A']);
-    expect(new SheetHelper().headerValues).is.deep.equal([]);
-    expect(new SheetHelper().dataValues).is.deep.equal([]);
+    expect(new SheetHelper().memo.headerValues).is.deep.equal([]);
+    expect(new SheetHelper().memo.dataValues).is.deep.equal([]);
+    expect(new SheetHelper().memo.rowDataColl).is.deep.equal([]);
   });
 
   it('Can be use array or string for fields', () => {
@@ -105,17 +106,17 @@ describe('Test', () => {
 
     expect(helper.toRowDataColl(a)).is.deep.equal(data);
 
-    expect(helper.headerValues).is.deep.equal([
+    expect(helper.memo.headerValues).is.deep.equal([
       ['Column A', 'Column B', 'Column C'],
     ]);
 
-    expect(helper.dataValues).is.deep.equal([
+    expect(helper.memo.dataValues).is.deep.equal([
       ['a', '1', true],
       ['b', '2', false],
     ]);
 
-    expect(helper.dataColl).is.not.equal(data);
-    expect(helper.dataColl).is.deep.equal(data);
+    expect(helper.memo.rowDataColl).is.not.equal(data);
+    expect(helper.memo.rowDataColl).is.deep.equal(data);
   });
 
   it('toRowValuesColl', () => {
@@ -138,18 +139,37 @@ describe('Test', () => {
       },
     ];
 
-    helper.headerValues = headerValues;
-    expect(helper.toRowValuesColl(data)).is.deep.equal([
+    expect(helper.toRowValuesColl(data), 'Without headers present, appears default headers on top').is.deep.equal([
+      ['', '', ''],
+      ['a', '1', true],
+      ['b', '2', false],
+    ]);
+
+    expect(helper.memo.headerValues).is.deep.equal([
+      ['', '', ''],
+    ]);
+
+    expect(helper.toRowValuesColl(data, headerValues), 'Use presented headers').is.deep.equal([
       ['Column A', 'Column B', 'Column C'],
       ['a', '1', true],
       ['b', '2', false],
     ]);
 
-    expect(helper.headerValues).is.deep.equal([
+    expect(helper.memo.headerValues).is.deep.equal([
       ['Column A', 'Column B', 'Column C'],
     ]);
 
-    expect(helper.dataValues).is.deep.equal([
+    expect(helper.toRowValuesColl(data), 'Use memoized headers from previous call').is.deep.equal([
+      ['Column A', 'Column B', 'Column C'],
+      ['a', '1', true],
+      ['b', '2', false],
+    ]);
+
+    expect(helper.memo.headerValues).is.deep.equal([
+      ['Column A', 'Column B', 'Column C'],
+    ]);
+
+    expect(helper.memo.dataValues).is.deep.equal([
       ['a', '1', true],
       ['b', '2', false],
     ]);
