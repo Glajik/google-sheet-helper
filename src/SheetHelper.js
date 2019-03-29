@@ -2,6 +2,7 @@
 
 import findIndex from 'lodash/findIndex';
 import isArray from 'lodash/isArray';
+import isEqual from 'lodash/isEqual';
 // import '@babel/polyfill';
 import './arrayfill_polyfill';
 
@@ -79,8 +80,11 @@ export class SheetHelper {
    * @returns array of row objects
    */
   toRowDataColl(values) {
-    const headerValues = values.slice(0, this.numHeaders);
-    const dataValues = values.slice(this.numHeaders);
+    // return chached result
+    if (isEqual(values, this.memo.values)) return this.memo.rowDataColl;
+    const cloned = this.clone(values);
+    const headerValues = cloned.slice(0, this.numHeaders);
+    const dataValues = cloned.slice(this.numHeaders);
 
     const rowDataColl = [];
     const valuesCount = dataValues.length;
@@ -99,6 +103,7 @@ export class SheetHelper {
     this.memo.rowDataColl = rowDataColl;
     this.memo.headerValues = headerValues;
     this.memo.dataValues = dataValues;
+    this.memo.values = cloned;
     return this.clone(rowDataColl);
   }
 
