@@ -3,14 +3,12 @@
 import findIndex from 'lodash/findIndex';
 import isArray from 'lodash/isArray';
 import isEqual from 'lodash/isEqual';
-// import '@babel/polyfill';
 import './arrayfill_polyfill';
 
 /**
  * Provide more convient work with specified sheet
  */
-// eslint-disable-next-line
-export class SheetHelper {
+export default class SheetHelper {
   constructor(options = {}) {
     const {
       sheetName,
