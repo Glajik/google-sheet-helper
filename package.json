@@ -24,14 +24,15 @@
     "eslint-loader": "^2.1.2",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-promise": "^4.0.1",
+    "jsdoc-to-markdown": "^5.0.1",
     "lodash-webpack-plugin": "^0.11.5",
-    "mocha": "^6.0.2",
+    "mocha": "^6.2.1",
     "sinon": "^7.3.0",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.15"
   }
 }
