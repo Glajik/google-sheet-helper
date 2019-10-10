@@ -6,9 +6,10 @@ import isEqual from 'lodash/isEqual';
 import './arrayfill_polyfill';
 
 /**
+ * @class
  * Provide more convient work with specified sheet
  */
-export default class SheetHelper {
+class SheetHelper {
   constructor(options = {}) {
     const {
       sheetName,
@@ -253,3 +254,5 @@ export default class SheetHelper {
     return objectClone;
   }
 }
+
+export default SheetHelper;
